@@ -102,7 +102,7 @@ def record_data():
     root_bar.update_idletasks()
     progress.pack()
 
-    data = []
+    data = [] 
 
     for i in range(cant_de_frecuencias):
         data_aux, sr = record(RECORD_SECONDS=record_seconds)
