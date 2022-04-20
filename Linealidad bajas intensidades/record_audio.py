@@ -21,7 +21,7 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 
 #Detector de sonido en 16 bits:
-THRESHOLD = 5 #500 el original
+THRESHOLD = 100 #500 el original
 CHUNK_SIZE_silence = 1024
 FORMAT_silence = pyaudio.paInt16
 RATE_silence = 44100
@@ -72,7 +72,7 @@ def record(RECORD_SECONDS, sr=44100):
     myrecording = sd.rec(int(RECORD_SECONDS * sr), samplerate=sr,
                      channels=CHANNELS, blocking=True, dtype='float32')
 
-    #write(WAVE_OUTPUT_FILENAME, RATE, myrecording)
+    write('test_JBL750.wav', RATE, myrecording)
     return myrecording, sr
 
 

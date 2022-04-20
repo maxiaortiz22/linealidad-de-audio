@@ -10,14 +10,6 @@ import os
 cwd = os.getcwd()
 os.chdir(cwd)
 
-"""La variable RECORD_SECONDS va a tener que ser 2*Cantidad_De_Pasos_En_Cada_Frecuencia 
-Tengo el dato que de 50 dB para arriba grabo los de ganancia baja de la placa y de
-45 para abajo grabo los de ganancia máxima de la placa. Puedo aprovechar este valor y los pasos
-van a se de 50 al máximo para uno y de 45 al mínimo para el otro. En cada caso tendría que obtener
-el get del cuadrito de cada frecuencia que corresponda!!! Posiiblemente tenga que hacer un record()
-por cada frecuencia!!!!!!!!!"""
-
-
 
 global my_entries
 
@@ -31,11 +23,12 @@ my_entries = []
 def calcular():
     """Una vez obtenidos los audios, paso a calcular linealidad"""
     global cal
-    global record_seconds
     global data
     global sr
 
-    test = linealidad(cal, data, record_seconds, sr)
+    auricular = clicked.get()
+
+    test = linealidad(cal, data, sr, auricular)
 
     file_name = file_name_entry.get()
 
@@ -82,9 +75,8 @@ def record_cal():
     root_bar.destroy()
     print('Calibración cargada!')
 
-def record():
+def record_data():
     global data
-    global record_seconds
     global sr
 
     root_bar = Tk()
@@ -99,16 +91,23 @@ def record():
     root_bar.update_idletasks()
     progress.pack()
 
-    record_seconds = 11*11*2 # [saltos_de_nivel]*[frecuencias]*[segundos_por_paso]
-                             # [40,35,30...,-10]*[125,250...,8000]*[ 2[s] ]
+    # La variable record_seconds va a tener que ser 2*Cantidad_De_Pasos_En_Cada_Frecuencia
+    record_seconds = 11*2 # [saltos_de_nivel]*[segundos_por_paso]
+                          # [125,250...,8000]*[ 2[s] ]
 
-    print(f'Se grabaran {record_seconds} [s] de audio')
+    cant_de_frecuencias = 11
+    print(f'Se grabaran {record_seconds*cant_de_frecuencias} [s] de audio')
 
     progress['value'] = 15
     root_bar.update_idletasks()
     progress.pack()
 
-    data, sr = record(RECORD_SECONDS=record_seconds)
+    data = []
+
+    for i in range(cant_de_frecuencias):
+        data_aux, sr = record(RECORD_SECONDS=record_seconds)
+
+        data.append(data_aux)
 
     progress['value'] = 100
     root_bar.update_idletasks()
@@ -151,23 +150,31 @@ for x in range(11):
     my_label = Label(root, text=frec_name[x])
     my_label.grid(row=x+1, column=0, pady=8, padx=5)
 
+clicked = StringVar()
+clicked.set("Supraural (ej: JBL600)")
+
+recomendacion0 = Label(root, text='Seleccione el tipo de auricular:')
+recomendacion0.grid(row=1, column=3, pady=5, padx=10)
+tipo_auricular = OptionMenu(root, clicked, "Supraural (ej: JBL600)", "Circumaural (ej: JBL750)")
+tipo_auricular.grid(row=2, column=3, pady=5, padx=10)
+
 
 recomendacion1 = Label(root, text='Recomendado: 1 kHz @ 65 dBHL')
-recomendacion1.grid(row=1, column=3, pady=5, padx=10)
+recomendacion1.grid(row=4, column=3, pady=5, padx=10)
 
-cal_low = Button(root, text="Calibración baja ganancia", command=record_cal)
-cal_low.grid(row=2, column=3, pady=5, padx=10)
+cal_low = Button(root, text="Calibración", command=record_cal)
+cal_low.grid(row=5, column=3, pady=5, padx=10)
 
-record_low = Button(root, text="Grabar a baja ganancia", command=record)
-record_low.grid(row=3, column=3, pady=5, padx=10)
+record_low = Button(root, text="Grabar test", command=record_data)
+record_low.grid(row=6, column=3, pady=5, padx=10)
 
 file_name_recomendacion = Label(root, text='Nombre del archivo:')
-file_name_recomendacion.grid(row=6, column=3, pady=5, padx=10)
+file_name_recomendacion.grid(row=8, column=3, pady=5, padx=10)
 
 file_name_entry = Entry(root, justify=LEFT, textvariable='Nombre del excel')
-file_name_entry.grid(row=7, column=3, pady=5, padx=10)
+file_name_entry.grid(row=9, column=3, pady=5, padx=10)
 
 calculate = Button(root, text="Calcular", command=calcular)
-calculate.grid(row=8, column=3, pady=5, padx=10)
+calculate.grid(row=10, column=3, pady=5, padx=10)
 
 root.mainloop()
