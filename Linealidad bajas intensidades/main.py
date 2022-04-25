@@ -15,7 +15,7 @@ global my_entries
 
 root = Tk()
 root.title("Test de linealidad")
-root.geometry("580x500")
+root.geometry("300x320")
 root.iconbitmap('logo.ico')
 
 my_entries = []
@@ -83,7 +83,7 @@ def record_data():
     root_bar.iconbitmap('logo.ico')
     Frame(root_bar, width=250, height=8).pack()
     root_bar.title('Calculando...')
-    string_var = Label(root_bar, text='Grabando a baja ganancia!')
+    string_var = Label(root_bar, text='Grabando el test!')
     string_var.pack()
     progress = Progressbar(root_bar, orient = HORIZONTAL, length = 100, mode = 'determinate')
 
@@ -102,12 +102,20 @@ def record_data():
     root_bar.update_idletasks()
     progress.pack()
 
-    data = [] 
+    freq = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000]
+
+    data = np.array([])
 
     for i in range(cant_de_frecuencias):
+        print(f'Frecuencia a grabar: {freq[i]} Hz')
         data_aux, sr = record(RECORD_SECONDS=record_seconds)
+        print(f'Se grabaron {len(data_aux)} muestras en esta iteración')
 
-        data.append(data_aux)
+        print(f'Grabado {freq[i]} Hz')
+        data = np.append(data, data_aux)
+        print(f'Se acumularon {len(data)} muestras')
+
+    #data = data[:int(11*2*11)]
 
     progress['value'] = 100
     root_bar.update_idletasks()
@@ -117,64 +125,32 @@ def record_data():
 
     print('Audio grabado!')
 
-#Nombres de las columnas
-frec_name = Label(root, text='Frecuencia [Hz]')
-frec_name.grid(row=0, column=0, pady=8, padx=5)
-
-min_name = Label(root, text='Mínimo app [dBHL]')
-min_name.grid(row=0, column=1, pady=8, padx=5)
-
-max_name = Label(root, text='Máximo app [dBHL]')
-max_name.grid(row=0, column=2, pady=8, padx=5)
-
-#Cuadros de mínimos y máximos
-
-min_max_default = [[-10,40],[-10,40],[-10,40],[-10,40],[-10,40],[-10,40],
-                   [-10,40],[-10,40],[-10,40],[-10,40],[-10,40]] #Cargo valores por default de mínimos y máximos de dBHL
-
-#Row Loop
-for y in range(11):
-    #Column Loop
-    for x in range(2):
-        default_min_max = StringVar()
-        default_min_max.set(min_max_default[y][x])
-        my_entry = Entry(root, justify=RIGHT, textvariable=default_min_max)
-        my_entry.grid(row=y+1, column=x+1, pady=5, padx=5)
-        my_entries.append(my_entry)
-
-#Nombre de las filas (las frecuencias)
-frec_name = ['125 Hz', '250 Hz', '500 Hz', '750 Hz','1000 Hz', '1500 Hz',
-            '2000 Hz', '3000 Hz', '4000 Hz', '6000 Hz', '8000 Hz']
-
-for x in range(11):
-    my_label = Label(root, text=frec_name[x])
-    my_label.grid(row=x+1, column=0, pady=8, padx=5)
 
 clicked = StringVar()
 clicked.set("Supraural (ej: JBL600)")
 
-recomendacion0 = Label(root, text='Seleccione el tipo de auricular:')
-recomendacion0.grid(row=1, column=3, pady=5, padx=10)
-tipo_auricular = OptionMenu(root, clicked, "Supraural (ej: JBL600)", "Circumaural (ej: JBL750)")
-tipo_auricular.grid(row=2, column=3, pady=5, padx=10)
+recomendacion0 = Label(root, text='Seleccione el tipo de auricular:').pack(pady=5, padx=10)
+#recomendacion0.grid(row=1, column=0, pady=5, padx=10)
+tipo_auricular = OptionMenu(root, clicked, "Supraural (ej: JBL600)", "Circumaural (ej: JBL750)").pack(pady=5, padx=10)
+#tipo_auricular.grid(row=2, column=0, pady=5, padx=10)
 
 
-recomendacion1 = Label(root, text='Recomendado: 1 kHz @ 65 dBHL')
-recomendacion1.grid(row=4, column=3, pady=5, padx=10)
+recomendacion1 = Label(root, text='Recomendado: 1 kHz @ 65 dBHL').pack(pady=5, padx=10)
+#recomendacion1.grid(row=4, column=0, pady=5, padx=10)
 
-cal_low = Button(root, text="Calibración", command=record_cal)
-cal_low.grid(row=5, column=3, pady=5, padx=10)
+cal_low = Button(root, text="Calibración", command=record_cal).pack(pady=5, padx=10)
+#cal_low.grid(row=5, column=0, pady=5, padx=10)
 
-record_low = Button(root, text="Grabar test", command=record_data)
-record_low.grid(row=6, column=3, pady=5, padx=10)
+record_low = Button(root, text="Grabar test", command=record_data).pack(pady=5, padx=10)
+#record_low.grid(row=6, column=0, pady=5, padx=10)
 
-file_name_recomendacion = Label(root, text='Nombre del archivo:')
-file_name_recomendacion.grid(row=8, column=3, pady=5, padx=10)
+file_name_recomendacion = Label(root, text='Nombre del archivo:').pack(pady=5, padx=10)
+#file_name_recomendacion.grid(row=8, column=0, pady=5, padx=10)
 
-file_name_entry = Entry(root, justify=LEFT, textvariable='Nombre del excel')
-file_name_entry.grid(row=9, column=3, pady=5, padx=10)
+file_name_entry = Entry(root, justify=LEFT, textvariable='Nombre del excel').pack(pady=5, padx=10)
+#file_name_entry.grid(row=9, column=0, pady=5, padx=10)
 
-calculate = Button(root, text="Calcular", command=calcular)
-calculate.grid(row=10, column=3, pady=5, padx=10)
+calculate = Button(root, text="Calcular", command=calcular).pack(pady=5, padx=10)
+#calculate.grid(row=10, column=0, pady=5, padx=10)
 
 root.mainloop()

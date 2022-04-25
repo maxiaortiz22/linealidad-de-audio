@@ -21,7 +21,7 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 
 #Detector de sonido en 16 bits:
-THRESHOLD = 100 #500 el original
+THRESHOLD = 50 #500 el original
 CHUNK_SIZE_silence = 1024
 FORMAT_silence = pyaudio.paInt16
 RATE_silence = 44100
